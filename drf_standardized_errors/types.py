@@ -1,9 +1,13 @@
 from dataclasses import dataclass
 from enum import Enum
-from typing import List, Optional, TypedDict
+from typing import List, Optional, TypedDict, cast
 
 from rest_framework.request import Request
 from rest_framework.views import APIView
+
+from drf_standardized_errors.settings import DEFAULTS, IMPORT_STRINGS, PackageSettings
+
+package_settings = PackageSettings(DEFAULTS, IMPORT_STRINGS)
 
 
 class ExceptionHandlerContext(TypedDict):
@@ -13,17 +17,17 @@ class ExceptionHandlerContext(TypedDict):
     request: Optional[Request]
 
 
+BUSINESS_CODE_NAME = cast(str, package_settings.EXCEPTION_RESPONSE_BUSINESS_ATTRIBUTE)
 class ErrorType(str, Enum):
     VALIDATION_ERROR = "validation_error"
     CLIENT_ERROR = "client_error"
     SERVER_ERROR = "server_error"
 
 
-@dataclass
 class Error:
-    code: str
     detail: str
     attr: Optional[str]
+    BUSINESS_CODE_NAME: Optional[int]
 
 
 @dataclass
