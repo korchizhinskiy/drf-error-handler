@@ -49,15 +49,13 @@ class ExceptionFormatter:
             return ErrorType.SERVER_ERROR
 
     def get_errors(self) -> List[Error]:
-        """
-        Account for validation errors in nested serializers by returning a list
-        of errors instead of a nested dict
-        """
-        return flatten_errors(self.exc.detail)
+        """Account for validation errors in nested serializers by returning list of errors instead of a nested dict."""
+        return flatten_errors(
+            detail=self.exc.detail,
+            b_code=getattr(self.exc, package_settings.EXCEPTION_RESPONSE_BUSINESS_ATTRIBUTE, None),
+        )
 
-    def get_error_response(
-        self, error_type: ErrorType, errors: List[Error]
-    ) -> ErrorResponse:
+    def get_error_response(self, error_type: ErrorType, errors: List[Error]) -> ErrorResponse:
         return ErrorResponse(error_type, errors)
 
     def format_error_response(self, error_response: ErrorResponse) -> Any:
@@ -66,6 +64,7 @@ class ExceptionFormatter:
 
 def flatten_errors(
     detail: Union[list, dict, exceptions.ErrorDetail],
+    b_code: Optional[int] = None,
     attr: Optional[str] = None,
     index: Optional[int] = None,
 ) -> List[Error]:
@@ -105,33 +104,28 @@ def flatten_errors(
     """
 
     # preserve the order of the previous implementation with a fifo queue
-    fifo = [(detail, attr, index)]
+    fifo = [(detail, b_code, attr, index)]
     errors = []
     while fifo:
-        detail, attr, index = fifo.pop(0)
+        detail, b_code, attr, index = fifo.pop(0)
         if not detail:
             continue
         elif isinstance(detail, list):
             for item in detail:
                 if not isinstance(item, exceptions.ErrorDetail):
                     index = 0 if index is None else index + 1
-                    if attr:
-                        new_attr = (
-                            f"{attr}{package_settings.NESTED_FIELD_SEPARATOR}{index}"
-                        )
-                    else:
-                        new_attr = str(index)
-                    fifo.append((item, new_attr, index))
+                    new_attr = f"{attr}{package_settings.NESTED_FIELD_SEPARATOR}{index}" if attr else str(index)
+                    fifo.append((item, b_code, new_attr, index))
                 else:
-                    fifo.append((item, attr, index))
+                    fifo.append((item, b_code, attr, index))
 
         elif isinstance(detail, dict):
             for key, value in detail.items():
                 if attr:
                     key = f"{attr}{package_settings.NESTED_FIELD_SEPARATOR}{key}"
-                fifo.append((value, key, None))
+                fifo.append((value, b_code, key, None))
 
         else:
-            errors.append(Error(detail.code, str(detail), attr))
+            errors.append(Error(str(detail), attr, b_code))
 
     return errors
