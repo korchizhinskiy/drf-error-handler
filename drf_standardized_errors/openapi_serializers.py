@@ -14,45 +14,7 @@ class ServerErrorEnum(models.TextChoices):
     SERVER_ERROR = "server_error"
 
 
-class ParseErrorCodeEnum(models.TextChoices):
-    PARSE_ERROR = "parse_error"
-
-
-class ErrorCode401Enum(models.TextChoices):
-    AUTHENTICATION_FAILED = "authentication_failed"
-    NOT_AUTHENTICATED = "not_authenticated"
-
-
-class ErrorCode403Enum(models.TextChoices):
-    PERMISSION_DENIED = "permission_denied"
-
-
-class ErrorCode404Enum(models.TextChoices):
-    NOT_FOUND = "not_found"
-
-
-class ErrorCode405Enum(models.TextChoices):
-    METHOD_NOT_ALLOWED = "method_not_allowed"
-
-
-class ErrorCode406Enum(models.TextChoices):
-    NOT_ACCEPTABLE = "not_acceptable"
-
-
-class ErrorCode415Enum(models.TextChoices):
-    UNSUPPORTED_MEDIA_TYPE = "unsupported_media_type"
-
-
-class ErrorCode429Enum(models.TextChoices):
-    THROTTLED = "throttled"
-
-
-class ErrorCode500Enum(models.TextChoices):
-    ERROR = "error"
-
-
 class ValidationErrorSerializer(serializers.Serializer):
-    code = serializers.CharField()
     detail = serializers.CharField()
     attr = serializers.CharField()
 
@@ -63,7 +25,6 @@ class ValidationErrorResponseSerializer(serializers.Serializer):
 
 
 class ParseErrorSerializer(serializers.Serializer):
-    code = serializers.ChoiceField(choices=ParseErrorCodeEnum.choices)
     detail = serializers.CharField()
     attr = serializers.CharField(allow_null=True)
 
@@ -74,7 +35,6 @@ class ParseErrorResponseSerializer(serializers.Serializer):
 
 
 class Error401Serializer(serializers.Serializer):
-    code = serializers.ChoiceField(choices=ErrorCode401Enum.choices)
     detail = serializers.CharField()
     attr = serializers.CharField(allow_null=True)
 
@@ -85,7 +45,6 @@ class ErrorResponse401Serializer(serializers.Serializer):
 
 
 class Error403Serializer(serializers.Serializer):
-    code = serializers.ChoiceField(choices=ErrorCode403Enum.choices)
     detail = serializers.CharField()
     attr = serializers.CharField(allow_null=True)
 
@@ -96,7 +55,6 @@ class ErrorResponse403Serializer(serializers.Serializer):
 
 
 class Error404Serializer(serializers.Serializer):
-    code = serializers.ChoiceField(choices=ErrorCode404Enum.choices)
     detail = serializers.CharField()
     attr = serializers.CharField(allow_null=True)
 
@@ -107,7 +65,6 @@ class ErrorResponse404Serializer(serializers.Serializer):
 
 
 class Error405Serializer(serializers.Serializer):
-    code = serializers.ChoiceField(choices=ErrorCode405Enum.choices)
     detail = serializers.CharField()
     attr = serializers.CharField(allow_null=True)
 
@@ -118,7 +75,6 @@ class ErrorResponse405Serializer(serializers.Serializer):
 
 
 class Error406Serializer(serializers.Serializer):
-    code = serializers.ChoiceField(choices=ErrorCode406Enum.choices)
     detail = serializers.CharField()
     attr = serializers.CharField(allow_null=True)
 
@@ -129,7 +85,6 @@ class ErrorResponse406Serializer(serializers.Serializer):
 
 
 class Error415Serializer(serializers.Serializer):
-    code = serializers.ChoiceField(choices=ErrorCode415Enum.choices)
     detail = serializers.CharField()
     attr = serializers.CharField(allow_null=True)
 
@@ -140,7 +95,6 @@ class ErrorResponse415Serializer(serializers.Serializer):
 
 
 class Error429Serializer(serializers.Serializer):
-    code = serializers.ChoiceField(choices=ErrorCode429Enum.choices)
     detail = serializers.CharField()
     attr = serializers.CharField(allow_null=True)
 
@@ -151,9 +105,8 @@ class ErrorResponse429Serializer(serializers.Serializer):
 
 
 class Error500Serializer(serializers.Serializer):
-    code = serializers.ChoiceField(choices=ErrorCode500Enum.choices)
     detail = serializers.CharField()
-    attr = serializers.CharField(allow_null=True)
+    attr = serializers.CharField(allow_null=True, )
 
 
 class ErrorResponse500Serializer(serializers.Serializer):
