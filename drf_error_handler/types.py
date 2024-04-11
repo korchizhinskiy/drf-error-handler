@@ -23,6 +23,7 @@ class ErrorType(str, Enum):
     SERVER_ERROR = "server_error"
 
 
+@dataclass
 class Error:
     detail: str
     attr: Optional[str]
