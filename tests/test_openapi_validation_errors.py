@@ -1,6 +1,7 @@
 import pytest
 from django.contrib.auth.models import Group, User
 from django.views.generic import UpdateView
+from drf_error_handler.openapi_validation_errors import extend_validation_errors
 from drf_spectacular.utils import extend_schema
 from rest_framework import serializers
 from rest_framework.decorators import action, api_view
@@ -8,8 +9,6 @@ from rest_framework.generics import DestroyAPIView, UpdateAPIView
 from rest_framework.response import Response
 from rest_framework.versioning import URLPathVersioning
 from rest_framework.viewsets import ModelViewSet
-
-from drf_standardized_errors.openapi_validation_errors import extend_validation_errors
 
 from .utils import generate_versioned_view_schema, generate_view_schema, get_error_codes
 
@@ -22,9 +21,7 @@ class UserSerializer(serializers.ModelSerializer):
 
 @pytest.fixture
 def viewset_with_extra_errors():
-    @extend_validation_errors(
-        ["extra_error"], field_name="first_name", actions=["create"]
-    )
+    @extend_validation_errors(["extra_error"], field_name="first_name", actions=["create"])
     class ValidationViewSet(ModelViewSet):
         serializer_class = UserSerializer
         queryset = User.objects.all()
@@ -60,17 +57,13 @@ def test_extra_validation_errors_to_view(view_with_extra_errors):
     schema = generate_view_schema(route, view)
     error_codes = get_error_codes(schema, "ValidateUpdateFirstNameErrorComponent")
     assert "extra_error" in error_codes
-    error_codes = get_error_codes(
-        schema, "ValidatePartialUpdateFirstNameErrorComponent"
-    )
+    error_codes = get_error_codes(schema, "ValidatePartialUpdateFirstNameErrorComponent")
     assert "extra_error" not in error_codes
 
 
 @pytest.fixture
 def function_based_view_with_extra_errors():
-    @extend_validation_errors(
-        ["extra_error"], field_name="first_name", methods=["post"]
-    )
+    @extend_validation_errors(["extra_error"], field_name="first_name", methods=["post"])
     @extend_schema(request=UserSerializer, responses={201: None})
     @api_view(http_method_names=["post"])
     def validate(request):
@@ -102,9 +95,7 @@ def validation_viewset():
 
 def test_methods_case_sensitivity(validation_viewset):
     """make sure it doesn't matter if we pass 'post' or 'POST' or 'PosT'"""
-    extend_validation_errors(
-        ["another_code"], field_name="first_name", methods=["PosT"]
-    )(validation_viewset)
+    extend_validation_errors(["another_code"], field_name="first_name", methods=["PosT"])(validation_viewset)
 
     route = "validate/"
     view = validation_viewset.as_view({"post": "create"})
@@ -178,15 +169,10 @@ def function_based_api_view():
 
 
 def test_passing_action_for_api_view(function_based_api_view, capsys):
-    extend_validation_errors(["some_error"], actions=["some_action"])(
-        function_based_api_view
-    )
+    extend_validation_errors(["some_error"], actions=["some_action"])(function_based_api_view)
 
     stderr = capsys.readouterr().err
-    warning_msg = (
-        "The 'actions' argument of 'extend_validation_errors' should "
-        "only be set when decorating viewsets."
-    )
+    warning_msg = "The 'actions' argument of 'extend_validation_errors' should " "only be set when decorating viewsets."
     assert warning_msg in stderr
 
 
@@ -206,82 +192,60 @@ def test_passing_incorrect_method(validation_view, capsys):
 
 
 def test_passing_multiple_actions(validation_viewset):
-    extend_validation_errors(
-        ["some_error"], field_name="first_name", actions=["create", "partial_update"]
-    )(validation_viewset)
+    extend_validation_errors(["some_error"], field_name="first_name", actions=["create", "partial_update"])(
+        validation_viewset
+    )
 
     route = "validate/"
-    view = validation_viewset.as_view(
-        {"post": "create", "put": "update", "patch": "partial_update"}
-    )
+    view = validation_viewset.as_view({"post": "create", "put": "update", "patch": "partial_update"})
     schema = generate_view_schema(route, view)
     error_codes = get_error_codes(schema, "ValidateCreateFirstNameErrorComponent")
     assert "some_error" in error_codes
-    error_codes = get_error_codes(
-        schema, "ValidatePartialUpdateFirstNameErrorComponent"
-    )
+    error_codes = get_error_codes(schema, "ValidatePartialUpdateFirstNameErrorComponent")
     assert "some_error" in error_codes
     error_codes = get_error_codes(schema, "ValidateUpdateFirstNameErrorComponent")
     assert "some_error" not in error_codes
 
 
 def test_passing_actions_as_none(validation_viewset):
-    extend_validation_errors(["some_error"], field_name="first_name")(
-        validation_viewset
-    )
+    extend_validation_errors(["some_error"], field_name="first_name")(validation_viewset)
 
     route = "validate/"
-    view = validation_viewset.as_view(
-        {"post": "create", "put": "update", "patch": "partial_update"}
-    )
+    view = validation_viewset.as_view({"post": "create", "put": "update", "patch": "partial_update"})
     schema = generate_view_schema(route, view)
     error_codes = get_error_codes(schema, "ValidateCreateFirstNameErrorComponent")
     assert "some_error" in error_codes
-    error_codes = get_error_codes(
-        schema, "ValidatePartialUpdateFirstNameErrorComponent"
-    )
+    error_codes = get_error_codes(schema, "ValidatePartialUpdateFirstNameErrorComponent")
     assert "some_error" in error_codes
     error_codes = get_error_codes(schema, "ValidateUpdateFirstNameErrorComponent")
     assert "some_error" in error_codes
 
 
 def test_passing_multiple_methods(validation_viewset):
-    extend_validation_errors(
-        ["some_error"], field_name="first_name", methods=["post", "put"]
-    )(validation_viewset)
+    extend_validation_errors(["some_error"], field_name="first_name", methods=["post", "put"])(validation_viewset)
 
     route = "validate/"
-    view = validation_viewset.as_view(
-        {"post": "create", "put": "update", "patch": "partial_update"}
-    )
+    view = validation_viewset.as_view({"post": "create", "put": "update", "patch": "partial_update"})
     schema = generate_view_schema(route, view)
     error_codes = get_error_codes(schema, "ValidateCreateFirstNameErrorComponent")
     assert "some_error" in error_codes
     error_codes = get_error_codes(schema, "ValidateUpdateFirstNameErrorComponent")
     assert "some_error" in error_codes
-    error_codes = get_error_codes(
-        schema, "ValidatePartialUpdateFirstNameErrorComponent"
-    )
+    error_codes = get_error_codes(schema, "ValidatePartialUpdateFirstNameErrorComponent")
     assert "some_error" not in error_codes
 
 
 def test_passing_methods_as_none(validation_viewset):
-    extend_validation_errors(["some_error"], field_name="first_name")(
-        validation_viewset
-    )
+    extend_validation_errors(["some_error"], field_name="first_name")(validation_viewset)
 
     route = "validate/"
-    view = validation_viewset.as_view(
-        {"post": "create", "put": "update", "patch": "partial_update"}
-    )
+    view = validation_viewset.as_view({"post": "create", "put": "update", "patch": "partial_update"})
     schema = generate_view_schema(route, view)
     error_codes = get_error_codes(schema, "ValidateCreateFirstNameErrorComponent")
     assert "some_error" in error_codes
     error_codes = get_error_codes(schema, "ValidateUpdateFirstNameErrorComponent")
     assert "some_error" in error_codes
-    error_codes = get_error_codes(
-        schema, "ValidatePartialUpdateFirstNameErrorComponent"
-    )
+    error_codes = get_error_codes(schema, "ValidatePartialUpdateFirstNameErrorComponent")
     assert "some_error" in error_codes
 
 
@@ -296,28 +260,20 @@ def versioned_view():
 
 
 def test_passing_multiple_versions(versioned_view):
-    extend_validation_errors(
-        ["some_error"], field_name="first_name", versions=["v1", "v2"]
-    )(versioned_view)
+    extend_validation_errors(["some_error"], field_name="first_name", versions=["v1", "v2"])(versioned_view)
 
     view = versioned_view.as_view()
 
     versioned_schema = generate_versioned_view_schema(view, "v1")
-    error_codes = get_error_codes(
-        versioned_schema, "V1ValidateUpdateFirstNameErrorComponent"
-    )
+    error_codes = get_error_codes(versioned_schema, "V1ValidateUpdateFirstNameErrorComponent")
     assert "some_error" in error_codes
 
     versioned_schema = generate_versioned_view_schema(view, "v2")
-    error_codes = get_error_codes(
-        versioned_schema, "V2ValidateUpdateFirstNameErrorComponent"
-    )
+    error_codes = get_error_codes(versioned_schema, "V2ValidateUpdateFirstNameErrorComponent")
     assert "some_error" in error_codes
 
     versioned_schema = generate_versioned_view_schema(view, "v3")
-    error_codes = get_error_codes(
-        versioned_schema, "V3ValidateUpdateFirstNameErrorComponent"
-    )
+    error_codes = get_error_codes(versioned_schema, "V3ValidateUpdateFirstNameErrorComponent")
     assert "some_error" not in error_codes
 
 
@@ -327,32 +283,22 @@ def test_passing_versions_as_none(versioned_view):
     view = versioned_view.as_view()
 
     versioned_schema = generate_versioned_view_schema(view, "v1")
-    error_codes = get_error_codes(
-        versioned_schema, "V1ValidateUpdateFirstNameErrorComponent"
-    )
+    error_codes = get_error_codes(versioned_schema, "V1ValidateUpdateFirstNameErrorComponent")
     assert "some_error" in error_codes
 
     versioned_schema = generate_versioned_view_schema(view, "v2")
-    error_codes = get_error_codes(
-        versioned_schema, "V2ValidateUpdateFirstNameErrorComponent"
-    )
+    error_codes = get_error_codes(versioned_schema, "V2ValidateUpdateFirstNameErrorComponent")
     assert "some_error" in error_codes
 
     versioned_schema = generate_versioned_view_schema(view, "v3")
-    error_codes = get_error_codes(
-        versioned_schema, "V3ValidateUpdateFirstNameErrorComponent"
-    )
+    error_codes = get_error_codes(versioned_schema, "V3ValidateUpdateFirstNameErrorComponent")
     assert "some_error" in error_codes
 
 
 def test_applying_decorator_multiple_times(validation_view):
     """all error codes should be added to corresponding fields"""
-    extend_first_name_errors = extend_validation_errors(
-        ["short_name"], field_name="first_name"
-    )
-    extend_non_field_errors = extend_validation_errors(
-        ["some_error"], field_name="non_field_errors"
-    )
+    extend_first_name_errors = extend_validation_errors(["short_name"], field_name="first_name")
+    extend_non_field_errors = extend_validation_errors(["some_error"], field_name="non_field_errors")
     extend_non_field_errors(extend_first_name_errors(validation_view))
 
     route = "validate/"
@@ -368,9 +314,7 @@ def test_applying_decorator_multiple_times(validation_view):
 def test_applying_decorator_multiple_times_same_field(validation_viewset):
     """only second_error should appear in the resulting schema"""
     add_first_error = extend_validation_errors(["first_error"], field_name="first_name")
-    add_second_error = extend_validation_errors(
-        ["second_error"], field_name="first_name"
-    )
+    add_second_error = extend_validation_errors(["second_error"], field_name="first_name")
     add_second_error(add_first_error(validation_viewset))
 
     route = "validate/"
@@ -398,9 +342,7 @@ def test_inherited_validation_errors(child_viewset):
     errors defined on a parent are found on the child and parent errors are
     not affected
     """
-    extend_validation_errors(["child_error"], field_name="non_field_errors")(
-        child_viewset
-    )
+    extend_validation_errors(["child_error"], field_name="non_field_errors")(child_viewset)
 
     route = "validate/"
     view = child_viewset.as_view({"post": "create"})
@@ -437,9 +379,7 @@ def test_extra_validation_errors_for_unexpected_method(delete_view):
     Test that it is possible to add validation errors even for delete even though
     validation errors are auto-generated only for post,put,patch or get on a list action
     """
-    extend_validation_errors(
-        ["some_error"], field_name="first_name", methods=["delete"]
-    )(delete_view)
+    extend_validation_errors(["some_error"], field_name="first_name", methods=["delete"])(delete_view)
 
     route = "validate/"
     view = delete_view.as_view()
@@ -468,9 +408,7 @@ def test_extra_validation_errors_for_unexpected_action(viewset_with_custom_actio
     even though validation errors are auto-generated only for post,put,patch or get
     on a list action
     """
-    extend_validation_errors(["some_error"], field_name="first_name", methods=["get"])(
-        viewset_with_custom_action
-    )
+    extend_validation_errors(["some_error"], field_name="first_name", methods=["get"])(viewset_with_custom_action)
 
     route = "superusers/"
     view = viewset_with_custom_action.as_view({"get": "fetch_superusers"})
@@ -503,9 +441,7 @@ def viewset_with_nested_serializer():
 def test_extra_validation_errors_for_nested_list_serializer_field(
     viewset_with_nested_serializer,
 ):
-    extend_validation_errors(["some_error"], field_name="groups.INDEX.name")(
-        viewset_with_nested_serializer
-    )
+    extend_validation_errors(["some_error"], field_name="groups.INDEX.name")(viewset_with_nested_serializer)
 
     route = "validate/"
     view = viewset_with_nested_serializer.as_view({"post": "create"})

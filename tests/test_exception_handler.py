@@ -4,14 +4,13 @@ import pytest
 from django.core.exceptions import PermissionDenied as DjangoPermissionDenied
 from django.core.signals import got_request_exception
 from django.http import Http404
+from drf_error_handler.handler import exception_handler
 from rest_framework.exceptions import (
     APIException,
     ErrorDetail,
     PermissionDenied,
     ValidationError,
 )
-
-from drf_standardized_errors.handler import exception_handler
 
 
 @pytest.fixture

@@ -2,10 +2,9 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import List, Optional, TypedDict, cast
 
+from drf_error_handler.settings import DEFAULTS, IMPORT_STRINGS, PackageSettings
 from rest_framework.request import Request
 from rest_framework.views import APIView
-
-from drf_standardized_errors.settings import DEFAULTS, IMPORT_STRINGS, PackageSettings
 
 package_settings = PackageSettings(DEFAULTS, IMPORT_STRINGS)
 

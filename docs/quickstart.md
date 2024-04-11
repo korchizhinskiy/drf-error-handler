@@ -2,14 +2,14 @@
 
 Install with `pip`
 ```shell
-pip install drf-standardized-errors
+pip install drf-error-handler
 ```
 
-Add drf-standardized-errors to your installed apps
+Add drf-error-handler to your installed apps
 ```python
 INSTALLED_APPS = [
     # other apps
-    "drf_standardized_errors",
+    "drf_error_handler",
 ]
 ```
 
@@ -17,13 +17,13 @@ Set the exception handler for all API views
 ```python
 REST_FRAMEWORK = {
     # other settings
-    "EXCEPTION_HANDLER": "drf_standardized_errors.handler.exception_handler"
+    "EXCEPTION_HANDLER": "drf_error_handler.handler.exception_handler"
 }
 ```
 
 or on a view basis (especially if you're introducing this to a versioned API)
 ```python
-from drf_standardized_errors.handler import exception_handler
+from drf_error_handler.handler import exception_handler
 from rest_framework.views import APIView
 
 class MyAPIView(APIView):
@@ -72,5 +72,5 @@ if you're using one.
 
 ## Integration with DRF spectacular
 If you plan to use [drf-spectacular](https://github.com/tfranzel/drf-spectacular) to generate an OpenAPI 3 schema,
-install with `pip install drf-standardized-errors[openapi]`. After that, check the doc page for configuring the
+install with `pip install drf-error-handler[openapi]`. After that, check the doc page for configuring the
 integration.

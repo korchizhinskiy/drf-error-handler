@@ -1,15 +1,12 @@
 from django.db import IntegrityError
+from drf_error_handler.formatter import ExceptionFormatter
+from drf_error_handler.handler import ExceptionHandler, exception_handler
+from drf_error_handler.types import ErrorResponse
 from rest_framework.exceptions import APIException
-
-from drf_standardized_errors.formatter import ExceptionFormatter
-from drf_standardized_errors.handler import ExceptionHandler, exception_handler
-from drf_standardized_errors.types import ErrorResponse
 
 
 def test_custom_exception_handler_class(settings, api_client):
-    settings.DRF_STANDARDIZED_ERRORS = {
-        "EXCEPTION_HANDLER_CLASS": "tests.test_settings.CustomExceptionHandler"
-    }
+    settings.DRF_ERROR_HANDLER = {"EXCEPTION_HANDLER_CLASS": "tests.test_settings.CustomExceptionHandler"}
     response = api_client.post("/integrity-error/")
     assert response.status_code == 409
     assert response.data["type"] == "client_error"
@@ -34,9 +31,7 @@ class ConcurrentUpdateError(APIException):
 
 
 def test_custom_exception_formatter_class(settings, api_client):
-    settings.DRF_STANDARDIZED_ERRORS = {
-        "EXCEPTION_FORMATTER_CLASS": "tests.test_settings.CustomExceptionFormatter"
-    }
+    settings.DRF_ERROR_HANDLER = {"EXCEPTION_FORMATTER_CLASS": "tests.test_settings.CustomExceptionFormatter"}
     response = api_client.get("/error/")
     assert response.status_code == 500
     assert response.data["type"] == "server_error"
@@ -57,24 +52,16 @@ class CustomExceptionFormatter(ExceptionFormatter):
         }
 
 
-def test_enable_in_debug_for_unhandled_exception_is_false(
-    settings, exc, exception_context
-):
+def test_enable_in_debug_for_unhandled_exception_is_false(settings, exc, exception_context):
     settings.DEBUG = True
-    settings.DRF_STANDARDIZED_ERRORS = {
-        "ENABLE_IN_DEBUG_FOR_UNHANDLED_EXCEPTIONS": False
-    }
+    settings.DRF_ERROR_HANDLER = {"ENABLE_IN_DEBUG_FOR_UNHANDLED_EXCEPTIONS": False}
     response = exception_handler(exc, exception_context)
     assert response is None
 
 
-def test_enable_in_debug_for_unhandled_exception_is_true(
-    settings, exc, exception_context
-):
+def test_enable_in_debug_for_unhandled_exception_is_true(settings, exc, exception_context):
     settings.DEBUG = True
-    settings.DRF_STANDARDIZED_ERRORS = {
-        "ENABLE_IN_DEBUG_FOR_UNHANDLED_EXCEPTIONS": True
-    }
+    settings.DRF_ERROR_HANDLER = {"ENABLE_IN_DEBUG_FOR_UNHANDLED_EXCEPTIONS": True}
     response = exception_handler(exc, exception_context)
     assert response is not None
     assert response.status_code == 500
@@ -87,7 +74,7 @@ def test_enable_in_debug_for_unhandled_exception_is_true(
 
 
 def test_nested_field_separator(settings, api_client):
-    settings.DRF_STANDARDIZED_ERRORS = {"NESTED_FIELD_SEPARATOR": "__"}
+    settings.DRF_ERROR_HANDLER = {"NESTED_FIELD_SEPARATOR": "__"}
     address = {
         "street_address": "123 Main street",
         "city": "Floral Park",

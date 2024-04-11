@@ -2,14 +2,14 @@
 
 Here are all available settings with their defaults, you can override them in your project settings
 ```python
-DRF_STANDARDIZED_ERRORS = {
+DRF_ERROR_HANDLER = {
     # class responsible for handling the exceptions. Can be subclassed to change
     # which exceptions are handled by default, to update which exceptions are
     # reported to error monitoring tools (like Sentry), ...
-    "EXCEPTION_HANDLER_CLASS": "drf_standardized_errors.handler.ExceptionHandler",
+    "EXCEPTION_HANDLER_CLASS": "drf_error_handler.handler.ExceptionHandler",
     # class responsible for generating error response output. Can be subclassed
     # to change the format of the error response.
-    "EXCEPTION_FORMATTER_CLASS": "drf_standardized_errors.formatter.ExceptionFormatter",
+    "EXCEPTION_FORMATTER_CLASS": "drf_error_handler.formatter.ExceptionFormatter",
     # When a validation error is raised in a nested serializer, the 'attr' key
     # of the error response will look like:
     # {field}{NESTED_FIELD_SEPARATOR}{nested_field}

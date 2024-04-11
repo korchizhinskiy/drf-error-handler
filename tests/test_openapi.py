@@ -3,6 +3,8 @@ from django.contrib.auth.models import User
 from django.urls import path
 from django_filters import CharFilter
 from django_filters.rest_framework import DjangoFilterBackend, FilterSet
+from drf_error_handler.openapi import AutoSchema
+from drf_error_handler.openapi_serializers import ClientErrorEnum
 from drf_spectacular.generators import SchemaGenerator
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import (
@@ -29,9 +31,6 @@ from rest_framework.response import Response
 from rest_framework.throttling import AnonRateThrottle
 from rest_framework.versioning import AcceptHeaderVersioning, URLPathVersioning
 from rest_framework.views import APIView
-
-from drf_standardized_errors.openapi import AutoSchema
-from drf_standardized_errors.openapi_serializers import ClientErrorEnum
 
 from .utils import generate_view_schema, get_responses
 
@@ -99,9 +98,7 @@ def test_discriminator_mapping_for_validation_serializer():
     view = ValidationView.as_view()
     schema = generate_view_schema(route, view)
 
-    discriminator = schema["components"]["schemas"]["ValidateCreateError"][
-        "discriminator"
-    ]
+    discriminator = schema["components"]["schemas"]["ValidateCreateError"]["discriminator"]
     assert discriminator["propertyName"] == "attr"
     mapping_fields = set(discriminator["mapping"])
     assert mapping_fields == {"non_field_errors", "first_name"}
@@ -112,9 +109,7 @@ def test_discriminator_mapping_for_http400_serializer():
     view = ValidationView.as_view(parser_classes=[JSONParser])
     schema = generate_view_schema(route, view)
 
-    discriminator = schema["components"]["schemas"]["ValidateCreateErrorResponse400"][
-        "discriminator"
-    ]
+    discriminator = schema["components"]["schemas"]["ValidateCreateErrorResponse400"]["discriminator"]
     assert discriminator["propertyName"] == "type"
     mapping_fields = set(discriminator["mapping"])
     assert mapping_fields == {"validation_error", "client_error"}
@@ -144,9 +139,7 @@ def test_no_error_raised_when_request_serializer_is_set_as_openapi_type():
     try:
         generate_view_schema(route, view)
     except Exception:
-        pytest.fail(
-            "Schema generation failed when using `@extend_schema(request.OpenApiTypes.OBJECT)`"
-        )
+        pytest.fail("Schema generation failed when using `@extend_schema(request.OpenApiTypes.OBJECT)`")
 
 
 class Object1Serializer(serializers.Serializer):
@@ -208,19 +201,17 @@ def test_error_codes_for_polymorphic_serializer():
     view = PolymorphicView.as_view()
     schema = generate_view_schema(route, view)
 
-    mapping = schema["components"]["schemas"]["ValidateCreateError"]["discriminator"][
-        "mapping"
-    ]
+    mapping = schema["components"]["schemas"]["ValidateCreateError"]["discriminator"]["mapping"]
     assert set(mapping) == {"non_field_errors", "type", "field1", "field2"}
 
-    create_error_codes = schema["components"]["schemas"][
-        "ValidateCreateNonFieldErrorsErrorComponent"
-    ]["properties"]["code"]["enum"]
+    create_error_codes = schema["components"]["schemas"]["ValidateCreateNonFieldErrorsErrorComponent"]["properties"][
+        "code"
+    ]["enum"]
     assert set(create_error_codes) == {"invalid", "object1_code", "object2_code"}
 
-    patch_error_codes = schema["components"]["schemas"][
-        "ValidatePartialUpdateNonFieldErrorsErrorComponent"
-    ]["properties"]["code"]["enum"]
+    patch_error_codes = schema["components"]["schemas"]["ValidatePartialUpdateNonFieldErrorsErrorComponent"][
+        "properties"
+    ]["code"]["enum"]
     assert set(patch_error_codes) == {"invalid", "object1_code", "object2_code"}
 
 
@@ -294,9 +285,7 @@ def test_403_error():
 
 def test_no_403_error_when_no_perm_classes():
     route = "perm-denied/"
-    view = DummyView.as_view(
-        authentication_classes=[BasicAuthentication], permission_classes=[]
-    )
+    view = DummyView.as_view(authentication_classes=[BasicAuthentication], permission_classes=[])
     schema = generate_view_schema(route, view)
     responses = get_responses(schema, route)
     assert "403" not in responses
@@ -304,9 +293,7 @@ def test_no_403_error_when_no_perm_classes():
 
 def test_no_403_error_when_allow_any():
     route = "perm-denied/"
-    view = DummyView.as_view(
-        authentication_classes=[BasicAuthentication], permission_classes=[AllowAny]
-    )
+    view = DummyView.as_view(authentication_classes=[BasicAuthentication], permission_classes=[AllowAny])
     schema = generate_view_schema(route, view)
     responses = get_responses(schema, route)
     assert "403" not in responses
@@ -399,7 +386,7 @@ class AutoSchemaNo405(AutoSchema):
 
 def test_no_405_error(settings):
     settings.REST_FRAMEWORK = {
-        "EXCEPTION_HANDLER": "drf_standardized_errors.handler.exception_handler",
+        "EXCEPTION_HANDLER": "drf_error_handler.handler.exception_handler",
         "DEFAULT_SCHEMA_CLASS": "tests.test_openapi.AutoSchemaNo405",
     }
     route = "method-not-allowed/"
@@ -485,7 +472,7 @@ def test_500_error():
 def test_no_error_responses_when_not_using_package_exception_handler(settings):
     settings.REST_FRAMEWORK = {
         "EXCEPTION_HANDLER": "rest_framework.views.exception_handler",
-        "DEFAULT_SCHEMA_CLASS": "drf_standardized_errors.openapi.AutoSchema",
+        "DEFAULT_SCHEMA_CLASS": "drf_error_handler.openapi.AutoSchema",
     }
 
     route = "dummy/"
@@ -513,7 +500,7 @@ def test_custom_status_code(settings):
     should result in the status code appearing for any schema operation
     """
     codes = ["400", "401", "403", "404", "405", "406", "415", "429", "500", "418"]
-    settings.DRF_STANDARDIZED_ERRORS = {
+    settings.DRF_ERROR_HANDLER = {
         "ALLOWED_ERROR_STATUS_CODES": codes,
         "ERROR_SCHEMAS": {"418": "tests.test_openapi.TeaPotSerializer"},
     }
@@ -535,13 +522,13 @@ def test_unhandled_status_code(settings, capsys):
     """
 
     codes = ["400", "401", "403", "404", "405", "406", "415", "429", "500", "499"]
-    settings.DRF_STANDARDIZED_ERRORS = {"ALLOWED_ERROR_STATUS_CODES": codes}
+    settings.DRF_ERROR_HANDLER = {"ALLOWED_ERROR_STATUS_CODES": codes}
 
     route = "unhandled_status_code/"
     view = DummyView.as_view()
     generate_view_schema(route, view)
     stderr = capsys.readouterr().err
-    assert "drf-standardized-errors: The status code '499'" in stderr
+    assert "drf-error-handler: The status code '499'" in stderr
 
 
 @pytest.fixture
@@ -574,13 +561,9 @@ class CallbackView(APIView):
                 name="myEvent",
                 path="{$request.body#/callbackUrl}",
                 decorator=extend_schema(
-                    request=inline_serializer(
-                        "EventSerializer", fields={"message": serializers.CharField()}
-                    ),
+                    request=inline_serializer("EventSerializer", fields={"message": serializers.CharField()}),
                     responses={
-                        200: OpenApiResponse(
-                            description="Your server returns this code if it accepts the callback"
-                        )
+                        200: OpenApiResponse(description="Your server returns this code if it accepts the callback")
                     },
                 ),
             )
@@ -653,6 +636,4 @@ def test_examples_from_extend_schema_serializer_are_showing_up(api_client):
     resp200 = schema["paths"]["/extend_schema_serializer/"]["get"]["responses"]["200"]
     assert "examples" in resp200["content"]["application/json"]
     examples = resp200["content"]["application/json"]["examples"]
-    assert (
-        examples["ExtendSchemaSerializerExample"]["value"]["field"] == "specific_value"
-    )
+    assert examples["ExtendSchemaSerializerExample"]["value"]["field"] == "specific_value"

@@ -8,12 +8,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.core.validators import FileExtensionValidator
 from django_filters import CharFilter
 from django_filters.rest_framework import DjangoFilterBackend, FilterSet
-from drf_spectacular.plumbing import build_mock_request
-from rest_framework import serializers
-from rest_framework.generics import ListAPIView
-from rest_framework.schemas.openapi import SchemaGenerator
-
-from drf_standardized_errors.openapi_utils import (
+from drf_error_handler.openapi_utils import (
     InputDataField,
     get_django_filter_backends,
     get_error_serializer,
@@ -22,6 +17,10 @@ from drf_standardized_errors.openapi_utils import (
     get_form_fields_with_error_codes,
     get_serializer_fields_with_error_codes,
 )
+from drf_spectacular.plumbing import build_mock_request
+from rest_framework import serializers
+from rest_framework.generics import ListAPIView
+from rest_framework.schemas.openapi import SchemaGenerator
 
 from .models import Post
 
@@ -81,9 +80,7 @@ def test_get_flat_serializer_fields_with_nested_read_only():
 
 @pytest.fixture
 def char_field():
-    return InputDataField(
-        name="name", field=serializers.CharField(min_length=1, max_length=200)
-    )
+    return InputDataField(name="name", field=serializers.CharField(min_length=1, max_length=200))
 
 
 def test_char_field_error_codes(char_field):
@@ -104,9 +101,7 @@ def test_char_field_error_codes(char_field):
 def slug_field():
     return InputDataField(
         name="title",
-        field=serializers.SlugField(
-            allow_null=True, allow_blank=True, allow_unicode=True
-        ),
+        field=serializers.SlugField(allow_null=True, allow_blank=True, allow_unicode=True),
     )
 
 
@@ -159,9 +154,7 @@ def test_integer_field_error_codes(integer_field):
 def decimal_field():
     return InputDataField(
         name="rate",
-        field=serializers.DecimalField(
-            max_digits=3, decimal_places=2, required=False, allow_null=True
-        ),
+        field=serializers.DecimalField(max_digits=3, decimal_places=2, required=False, allow_null=True),
     )
 
 
@@ -178,9 +171,7 @@ def test_decimal_field_error_codes(decimal_field):
 
 @pytest.fixture
 def datetime_field():
-    return InputDataField(
-        name="dt", field=serializers.DateTimeField(required=False, allow_null=True)
-    )
+    return InputDataField(name="dt", field=serializers.DateTimeField(required=False, allow_null=True))
 
 
 def test_datetime_field_error_codes(datetime_field):
@@ -197,9 +188,7 @@ def test_naive_datetime_field_error_codes(settings, datetime_field):
 
 @pytest.fixture
 def date_field():
-    return InputDataField(
-        name="date", field=serializers.DateField(required=False, allow_null=True)
-    )
+    return InputDataField(name="date", field=serializers.DateField(required=False, allow_null=True))
 
 
 def test_date_field_error_codes(date_field):
@@ -253,9 +242,7 @@ def test_image_field_error_codes(image_field):
 
 @pytest.fixture
 def list_field():
-    return InputDataField(
-        name="items", field=serializers.ListField(required=False, allow_null=True)
-    )
+    return InputDataField(name="items", field=serializers.ListField(required=False, allow_null=True))
 
 
 def test_list_field_error_codes(list_field):
@@ -290,9 +277,7 @@ class UserSerializer(serializers.Serializer):
 
 @pytest.fixture
 def serializer():
-    return InputDataField(
-        name="non_field_errors", field=UserSerializer(required=True, allow_null=False)
-    )
+    return InputDataField(name="non_field_errors", field=UserSerializer(required=True, allow_null=False))
 
 
 def test_top_level_non_field_errors_error_codes(serializer):
@@ -347,9 +332,7 @@ class ContentTypeSerializer(serializers.ModelSerializer):
     """
 
     app_label = serializers.CharField(max_length=100, required=False)
-    model = serializers.CharField(
-        label="Python model class name", max_length=100, required=False
-    )
+    model = serializers.CharField(label="Python model class name", max_length=100, required=False)
 
     class Meta:
         model = ContentType
@@ -362,9 +345,7 @@ def unique_together():
 
 
 def test_unique_together_error_codes(unique_together):
-    non_field_errors, app_label, model = get_serializer_fields_with_error_codes(
-        unique_together
-    )
+    non_field_errors, app_label, model = get_serializer_fields_with_error_codes(unique_together)
 
     assert "unique" in non_field_errors.error_codes
     assert "required" in app_label.error_codes
@@ -602,7 +583,7 @@ def test_error_component_name_suffix():
 
 
 def test_updated_error_component_name_suffix(settings):
-    settings.DRF_STANDARDIZED_ERRORS = {"ERROR_COMPONENT_NAME_SUFFIX": "FaultComponent"}
+    settings.DRF_ERROR_HANDLER = {"ERROR_COMPONENT_NAME_SUFFIX": "FaultComponent"}
 
     serializer = get_error_serializer("users_create", "first_name", {"required"})
     assert serializer.Meta.ref_name.endswith("FaultComponent")
@@ -615,7 +596,7 @@ def test_list_index_in_api_schema():
 
 
 def test_updated_list_index_in_api_schema(settings):
-    settings.DRF_STANDARDIZED_ERRORS = {"LIST_INDEX_IN_API_SCHEMA": "IDX"}
+    settings.DRF_ERROR_HANDLER = {"LIST_INDEX_IN_API_SCHEMA": "IDX"}
 
     fields = get_flat_serializer_fields(UserSerializer(many=True))
     expected_fields = {"non_field_errors", "IDX.non_field_errors", "IDX.name"}
@@ -633,7 +614,7 @@ def test_dict_index_in_api_schema():
 
 
 def test_updated_dict_index_in_api_schema(settings):
-    settings.DRF_STANDARDIZED_ERRORS = {"DICT_KEY_IN_API_SCHEMA": "DICT_KEY"}
+    settings.DRF_ERROR_HANDLER = {"DICT_KEY_IN_API_SCHEMA": "DICT_KEY"}
 
     fields = get_flat_serializer_fields(DictSerializer())
     expected_fields = {"non_field_errors", "d", "d.DICT_KEY"}

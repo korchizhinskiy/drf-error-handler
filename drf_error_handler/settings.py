@@ -13,7 +13,7 @@ class PackageSettings:
     to be imported.
     """
 
-    setting_name = "DRF_STANDARDIZED_ERRORS"
+    setting_name = "DRF_ERROR_HANDLER"
 
     def __init__(
         self,
@@ -65,8 +65,8 @@ class PackageSettings:
 
 
 DEFAULTS: Dict[str, Any] = {
-    "EXCEPTION_HANDLER_CLASS": "drf_standardized_errors.handler.ExceptionHandler",
-    "EXCEPTION_FORMATTER_CLASS": "drf_standardized_errors.formatter.ExceptionFormatter",
+    "EXCEPTION_HANDLER_CLASS": "drf_error_handler.handler.ExceptionHandler",
+    "EXCEPTION_FORMATTER_CLASS": "drf_error_handler.formatter.ExceptionFormatter",
     "ENABLE_IN_DEBUG_FOR_UNHANDLED_EXCEPTIONS": False,
     "NESTED_FIELD_SEPARATOR": ".",
     "ALLOWED_ERROR_STATUS_CODES": [

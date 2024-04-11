@@ -10,7 +10,7 @@ if "%SPHINXBUILD%" == "" (
 )
 set SOURCEDIR=.
 set BUILDDIR=_build
-set APP=..\drf_standardized_errors
+set APP=..\drf_error_handler
 
 %SPHINXBUILD% >NUL 2>NUL
 if errorlevel 9009 (

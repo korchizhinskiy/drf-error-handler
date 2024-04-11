@@ -6,12 +6,12 @@ Set the default schema class to the one provided by the package
 ```python
 REST_FRAMEWORK = {
     # other settings
-    "DEFAULT_SCHEMA_CLASS": "drf_standardized_errors.openapi.AutoSchema"
+    "DEFAULT_SCHEMA_CLASS": "drf_error_handler.openapi.AutoSchema"
 }
 ```
 or on a view basis (especially if you're introducing this to a versioned API)
 ```python
-from drf_standardized_errors.openapi import AutoSchema
+from drf_error_handler.openapi import AutoSchema
 from rest_framework.views import APIView
 
 class MyAPIView(APIView):
@@ -24,17 +24,17 @@ by drf-spectacular due to the same set of error codes appearing in multiple oper
 SPECTACULAR_SETTINGS = {
     # other settings
     "ENUM_NAME_OVERRIDES": {
-        "ValidationErrorEnum": "drf_standardized_errors.openapi_serializers.ValidationErrorEnum.choices",
-        "ClientErrorEnum": "drf_standardized_errors.openapi_serializers.ClientErrorEnum.choices",
-        "ServerErrorEnum": "drf_standardized_errors.openapi_serializers.ServerErrorEnum.choices",
-        "ErrorCode401Enum": "drf_standardized_errors.openapi_serializers.ErrorCode401Enum.choices",
-        "ErrorCode403Enum": "drf_standardized_errors.openapi_serializers.ErrorCode403Enum.choices",
-        "ErrorCode404Enum": "drf_standardized_errors.openapi_serializers.ErrorCode404Enum.choices",
-        "ErrorCode405Enum": "drf_standardized_errors.openapi_serializers.ErrorCode405Enum.choices",
-        "ErrorCode406Enum": "drf_standardized_errors.openapi_serializers.ErrorCode406Enum.choices",
-        "ErrorCode415Enum": "drf_standardized_errors.openapi_serializers.ErrorCode415Enum.choices",
-        "ErrorCode429Enum": "drf_standardized_errors.openapi_serializers.ErrorCode429Enum.choices",
-        "ErrorCode500Enum": "drf_standardized_errors.openapi_serializers.ErrorCode500Enum.choices",
+        "ValidationErrorEnum": "drf_error_handler.openapi_serializers.ValidationErrorEnum.choices",
+        "ClientErrorEnum": "drf_error_handler.openapi_serializers.ClientErrorEnum.choices",
+        "ServerErrorEnum": "drf_error_handler.openapi_serializers.ServerErrorEnum.choices",
+        "ErrorCode401Enum": "drf_error_handler.openapi_serializers.ErrorCode401Enum.choices",
+        "ErrorCode403Enum": "drf_error_handler.openapi_serializers.ErrorCode403Enum.choices",
+        "ErrorCode404Enum": "drf_error_handler.openapi_serializers.ErrorCode404Enum.choices",
+        "ErrorCode405Enum": "drf_error_handler.openapi_serializers.ErrorCode405Enum.choices",
+        "ErrorCode406Enum": "drf_error_handler.openapi_serializers.ErrorCode406Enum.choices",
+        "ErrorCode415Enum": "drf_error_handler.openapi_serializers.ErrorCode415Enum.choices",
+        "ErrorCode429Enum": "drf_error_handler.openapi_serializers.ErrorCode429Enum.choices",
+        "ErrorCode500Enum": "drf_error_handler.openapi_serializers.ErrorCode500Enum.choices",
     },
 }
 ```
@@ -43,7 +43,7 @@ Last, if you're not overriding the postprocessing hook setting from drf-spectacu
 ```python
 SPECTACULAR_SETTINGS = {
     # other settings
-    "POSTPROCESSING_HOOKS": ["drf_standardized_errors.openapi_hooks.postprocess_schema_enums"]
+    "POSTPROCESSING_HOOKS": ["drf_error_handler.openapi_hooks.postprocess_schema_enums"]
 }
 ```
 But if you're already overriding it, make sure to replace the enums postprocessing hook from drf-spectacular with
@@ -147,7 +147,7 @@ SPECTACULAR_SETTINGS = {
 Now that the details for errors that show in all operations is part to the docs, we can remove them from the list
 of errors that appear in the API schema. This should make the list of error responses
 ```python
-DRF_STANDARDIZED_ERRORS = {
+DRF_ERROR_HANDLER = {
     "ALLOWED_ERROR_STATUS_CODES": ["400", "403", "404", "429"]
 }
 ```
@@ -164,8 +164,8 @@ The 400 status code covers both validation errors and parse errors. But, since p
 every operation, you might want to hide them while still showing validation errors. Doing that requires overriding
 the default behavior of the error responses generation in the `AutoSchema` class:
 ```python
-from drf_standardized_errors.handler import exception_handler as standardized_errors_handler
-from drf_standardized_errors.openapi import AutoSchema
+from drf_error_handler.handler import exception_handler as standardized_errors_handler
+from drf_error_handler.openapi import AutoSchema
 
 class CustomAutoSchema(AutoSchema):
     def _should_add_error_response(self, responses: dict, status_code: str) -> bool:
@@ -218,7 +218,7 @@ the response returned.
 # serializers.py
 from django.db import models
 from rest_framework import serializers
-from drf_standardized_errors.openapi_serializers import ServerErrorEnum
+from drf_error_handler.openapi_serializers import ServerErrorEnum
 
 class ErrorCode503Enum(models.TextChoices):
     SERVICE_UNAVAILABLE = "service_unavailable"
@@ -235,7 +235,7 @@ class ErrorResponse503Serializer(serializers.Serializer):
 
 ```python
 # settings.py
-DRF_STANDARDIZED_ERRORS = {
+DRF_ERROR_HANDLER = {
     "ALLOWED_ERROR_STATUS_CODES": ["400", "403", "404", "429", "503"],
     "ERROR_SCHEMAS": {"503": "path.to.ErrorResponse503Serializer"}
 }
@@ -252,7 +252,7 @@ the one provided by this package and then override `AutoSchema._should_add_error
 that controls the addition of the error response to the operation. For example, adding the 503 response only if
 operation method is `GET` looks like this:
 ```python
-from drf_standardized_errors.openapi import AutoSchema
+from drf_error_handler.openapi import AutoSchema
 
 class CustomAutoSchema(AutoSchema):
     def _should_add_error_response(self, responses: dict, status_code: str) -> bool:
@@ -295,7 +295,7 @@ However, error response generation for `400` is complicated compared to others a
 
 Let's start with the easy ones (`403` and `404`):
 ```python
-from drf_standardized_errors.openapi_serializers import ClientErrorEnum, ErrorCode403Enum, ErrorCode404Enum
+from drf_error_handler.openapi_serializers import ClientErrorEnum, ErrorCode403Enum, ErrorCode404Enum
 from rest_framework import serializers
 
 
@@ -315,7 +315,7 @@ class ErrorResponse404Serializer(serializers.Serializer):
 
 Next, let's update the settings
 ```python
-DRF_STANDARDIZED_ERRORS = {
+DRF_ERROR_HANDLER = {
     "ALLOWED_ERROR_STATUS_CODES": ["400", "403", "404"],
     "ERROR_SCHEMAS": {
         "403": "path.to.ErrorResponse403Serializer",
@@ -329,9 +329,9 @@ errors are dynamic based on the serializer in the corresponding operation. So, w
 `AutoSchema` class that returns the correct error response serializer based on the operation.
 ```python
 from drf_spectacular.utils import PolymorphicProxySerializer
-from drf_standardized_errors.openapi_serializers import ClientErrorEnum, ParseErrorCodeEnum, ValidationErrorEnum
-from drf_standardized_errors.openapi import AutoSchema
-from drf_standardized_errors.settings import package_settings
+from drf_error_handler.openapi_serializers import ClientErrorEnum, ParseErrorCodeEnum, ValidationErrorEnum
+from drf_error_handler.openapi import AutoSchema
+from drf_error_handler.settings import package_settings
 from inflection import camelize
 from rest_framework import serializers
 
@@ -397,7 +397,7 @@ if you're picky about the examples and want to show that the `field_name` attrib
 other than validation errors, you can provide examples. Therefore, let's go with generating new examples for
 `403` and `404`.
 ```python
-from drf_standardized_errors.openapi import AutoSchema
+from drf_error_handler.openapi import AutoSchema
 from rest_framework import exceptions
 from drf_spectacular.utils import OpenApiExample
 
@@ -444,7 +444,7 @@ from rest_framework.viewsets import ModelViewSet
 from django import forms
 from django.contrib.auth import get_user_model
 from django_filters.rest_framework import DjangoFilterBackend, FilterSet, DateFilter
-from drf_standardized_errors.openapi_validation_errors import extend_validation_errors
+from drf_error_handler.openapi_validation_errors import extend_validation_errors
 
 User = get_user_model()
 
@@ -485,12 +485,12 @@ class UserViewSet(ModelViewSet):
 Few notes about the decorator:
 - It can be applied to a view class, viewset class or view function decorated with `@api_view`.
 - It can be applied multiple times to the same view.
-- It adds **extra** error codes to the ones already collected by drf-standardized-errors for a specific field.
+- It adds **extra** error codes to the ones already collected by drf-error-handler for a specific field.
 - If it is applied to a parent view, the added error codes will automatically be added to the child view.
 - Error codes added on a child view, override ones added in a parent view for a specific field, method, action
 and version.
 
 ```{eval-rst}
-.. automodule:: drf_standardized_errors.openapi_validation_errors
+.. automodule:: drf_error_handler.openapi_validation_errors
     :members: extend_validation_errors
 ```

@@ -20,17 +20,17 @@ rather than `values`. The list of overrides specific to this package should beco
 SPECTACULAR_SETTINGS = {
     # other settings
     "ENUM_NAME_OVERRIDES": {
-        "ValidationErrorEnum": "drf_standardized_errors.openapi_serializers.ValidationErrorEnum.choices",
-        "ClientErrorEnum": "drf_standardized_errors.openapi_serializers.ClientErrorEnum.choices",
-        "ServerErrorEnum": "drf_standardized_errors.openapi_serializers.ServerErrorEnum.choices",
-        "ErrorCode401Enum": "drf_standardized_errors.openapi_serializers.ErrorCode401Enum.choices",
-        "ErrorCode403Enum": "drf_standardized_errors.openapi_serializers.ErrorCode403Enum.choices",
-        "ErrorCode404Enum": "drf_standardized_errors.openapi_serializers.ErrorCode404Enum.choices",
-        "ErrorCode405Enum": "drf_standardized_errors.openapi_serializers.ErrorCode405Enum.choices",
-        "ErrorCode406Enum": "drf_standardized_errors.openapi_serializers.ErrorCode406Enum.choices",
-        "ErrorCode415Enum": "drf_standardized_errors.openapi_serializers.ErrorCode415Enum.choices",
-        "ErrorCode429Enum": "drf_standardized_errors.openapi_serializers.ErrorCode429Enum.choices",
-        "ErrorCode500Enum": "drf_standardized_errors.openapi_serializers.ErrorCode500Enum.choices",
+        "ValidationErrorEnum": "drf_error_handler.openapi_serializers.ValidationErrorEnum.choices",
+        "ClientErrorEnum": "drf_error_handler.openapi_serializers.ClientErrorEnum.choices",
+        "ServerErrorEnum": "drf_error_handler.openapi_serializers.ServerErrorEnum.choices",
+        "ErrorCode401Enum": "drf_error_handler.openapi_serializers.ErrorCode401Enum.choices",
+        "ErrorCode403Enum": "drf_error_handler.openapi_serializers.ErrorCode403Enum.choices",
+        "ErrorCode404Enum": "drf_error_handler.openapi_serializers.ErrorCode404Enum.choices",
+        "ErrorCode405Enum": "drf_error_handler.openapi_serializers.ErrorCode405Enum.choices",
+        "ErrorCode406Enum": "drf_error_handler.openapi_serializers.ErrorCode406Enum.choices",
+        "ErrorCode415Enum": "drf_error_handler.openapi_serializers.ErrorCode415Enum.choices",
+        "ErrorCode429Enum": "drf_error_handler.openapi_serializers.ErrorCode429Enum.choices",
+        "ErrorCode500Enum": "drf_error_handler.openapi_serializers.ErrorCode500Enum.choices",
         # other overrides
     },
 }
@@ -87,22 +87,22 @@ the corresponding field.
 ## [0.12.0] - 2022-08-27
 ### Added
 - add support for automatically generating error responses schema with [drf-spectacular](https://github.com/tfranzel/drf-spectacular).
-Check out the [corresponding documentation page](https://drf-standardized-errors.readthedocs.io/en/latest/openapi.html)
+Check out the [corresponding documentation page](https://drf-error-handler.readthedocs.io/en/latest/openapi.html)
 to know more about the integration with drf-spectacular.
 - add support for django 4.1
 
 ## [0.11.0] - 2022-06-24
 ### Changed (Backward-incompatible)
-- Removed all imports from `drf_standardized_errors.__init__.py`. This avoids facing the `AppRegistryNotReady` error
+- Removed all imports from `drf_error_handler.__init__.py`. This avoids facing the `AppRegistryNotReady` error
 in certain situations (fixes #7). This change **only affects where functions/classes are imported from**, there are
 **no changes to how they work**. To upgrade to this version, you need to:
-  - Update the `"EXCEPTION_HANDLER"` setting in `REST_FRAMEWORK` to `"drf_standardized_errors.handler.exception_handler"`.
+  - Update the `"EXCEPTION_HANDLER"` setting in `REST_FRAMEWORK` to `"drf_error_handler.handler.exception_handler"`.
   - If you imported the exception handler directly, make sure the import looks like this
-  `from drf_standardized_errors.handler import exception_handler`.
+  `from drf_error_handler.handler import exception_handler`.
   - If you imported the exception handler class, make sure the import looks like this
-  `from drf_standardized_errors.handler import ExceptionHandler`.
+  `from drf_error_handler.handler import ExceptionHandler`.
   - If you imported the exception formatter class, make sure the import looks like this
-  `from drf_standardized_errors.formatter import ExceptionFormatter`.
+  `from drf_error_handler.formatter import ExceptionFormatter`.
 
 ## [0.10.2] - 2022-05-08
 ### Fixed
@@ -117,7 +117,7 @@ in certain situations (fixes #7). This change **only affects where functions/cla
 ### Added
 
 - Build the documentation automatically on every commit to the main branch. The docs are
-[hosted on readthedocs](https://drf-standardized-errors.readthedocs.io/en/latest/).
+[hosted on readthedocs](https://drf-error-handler.readthedocs.io/en/latest/).
 - Add package metadata
 - add a GitHub workflow to create a GitHub release when a new tag is pushed
 - add a GitHub workflow to run tests on every push and pull request

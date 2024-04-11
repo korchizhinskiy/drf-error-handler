@@ -2,11 +2,11 @@
 
 Standardize your [DRF](https://www.django-rest-framework.org/) API error responses.
 
-[![Read the Docs](https://img.shields.io/readthedocs/drf-standardized-errors)](https://drf-standardized-errors.readthedocs.io/en/latest/)
-[![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/ghazi-git/drf-standardized-errors/tests.yml?branch=main&label=Tests&logo=GitHub)](https://github.com/ghazi-git/drf-standardized-errors/actions/workflows/tests.yml)
-[![codecov](https://codecov.io/gh/ghazi-git/drf-standardized-errors/branch/main/graph/badge.svg?token=JXTTT1KVBR)](https://codecov.io/gh/ghazi-git/drf-standardized-errors)
-[![PyPI](https://img.shields.io/pypi/v/drf-standardized-errors)](https://pypi.org/project/drf-standardized-errors/)
-[![PyPI - License](https://img.shields.io/pypi/l/drf-standardized-errors)](https://github.com/ghazi-git/drf-standardized-errors/blob/main/LICENSE)
+[![Read the Docs](https://img.shields.io/readthedocs/drf-error-handler)](https://drf-error-handler.readthedocs.io/en/latest/)
+[![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/korchizhinskiy/drf-error-handler/tests.yml?branch=main&label=Tests&logo=GitHub)](https://github.com/korchizhinskiy/drf-error-handler/actions/workflows/tests.yml)
+[![codecov](https://codecov.io/gh/korchizhinskiy/drf-error-handler/branch/main/graph/badge.svg?token=JXTTT1KVBR)](https://codecov.io/gh/korchizhinskiy/drf-error-handler)
+[![PyPI](https://img.shields.io/pypi/v/drf-error-handler)](https://pypi.org/project/drf-error-handler/)
+[![PyPI - License](https://img.shields.io/pypi/l/drf-error-handler)](https://github.com/korchizhinskiy/drf-error-handler/blob/main/LICENSE)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
 By default, the package will convert all API error responses (4xx and 5xx) to the following standardized format:
@@ -72,14 +72,14 @@ specific aspects the exception handling process without having to rewrite everyt
 
 Install with `pip`
 ```shell
-pip install drf-standardized-errors
+pip install drf-error-handler
 ```
 
-Add drf-standardized-errors to your installed apps
+Add drf-error-handler to your installed apps
 ```python
 INSTALLED_APPS = [
     # other apps
-    "drf_standardized_errors",
+    "drf_error_handler",
 ]
 ```
 
@@ -87,7 +87,7 @@ Register the exception handler
 ```python
 REST_FRAMEWORK = {
     # other settings
-    "EXCEPTION_HANDLER": "drf_standardized_errors.handler.exception_handler"
+    "EXCEPTION_HANDLER": "drf_error_handler.handler.exception_handler"
 }
 ```
 
@@ -95,25 +95,25 @@ REST_FRAMEWORK = {
 - This package is a DRF exception handler, so it standardizes errors that reach a DRF API view. That means it cannot
 handle errors that happen at the middleware level for example. To handle those as well, you can customize
 the necessary [django error views](https://docs.djangoproject.com/en/dev/topics/http/views/#customizing-error-views).
-You can find more about that in [this issue](https://github.com/ghazi-git/drf-standardized-errors/issues/44).
+You can find more about that in [this issue](https://github.com/korchizhinskiy/drf-error-handler/issues/44).
 
 - Standardized error responses when `DEBUG=True` for **unhandled exceptions** are disabled by default. That is
 to allow you to get more information out of the traceback. You can enable standardized errors instead with:
 ```python
-DRF_STANDARDIZED_ERRORS = {"ENABLE_IN_DEBUG_FOR_UNHANDLED_EXCEPTIONS": True}
+DRF_ERROR_HANDLER = {"ENABLE_IN_DEBUG_FOR_UNHANDLED_EXCEPTIONS": True}
 ```
 
 ## Integration with DRF spectacular
 If you plan to use [drf-spectacular](https://github.com/tfranzel/drf-spectacular) to generate an OpenAPI 3 schema,
-install with `pip install drf-standardized-errors[openapi]`. After that, check the [doc page](https://drf-standardized-errors.readthedocs.io/en/latest/openapi.html)
+install with `pip install drf-error-handler[openapi]`. After that, check the [doc page](https://drf-error-handler.readthedocs.io/en/latest/openapi.html)
 for configuring the integration.
 
 ## Links
 
-- Documentation: https://drf-standardized-errors.readthedocs.io/en/latest/
-- Changelog: https://github.com/ghazi-git/drf-standardized-errors/releases
-- Code & issues: https://github.com/ghazi-git/drf-standardized-errors
-- PyPI: https://pypi.org/project/drf-standardized-errors/
+- Documentation: https://drf-error-handler.readthedocs.io/en/latest/
+- Changelog: https://github.com/korchizhinskiy/drf-error-handler/releases
+- Code & issues: https://github.com/korchizhinskiy/drf-error-handler
+- PyPI: https://pypi.org/project/drf-error-handler/
 
 
 ## License

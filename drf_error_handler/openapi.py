@@ -62,7 +62,7 @@ class AutoSchema(BaseAutoSchema):
                     serializer = self._get_error_response_serializer(status_code)
                     if not serializer:
                         warn(
-                            f"drf-standardized-errors: The status code '{status_code}' "
+                            f"drf-error-handler: The status code '{status_code}' "
                             "is one of the allowed error status codes in the setting "
                             "'ALLOWED_ERROR_STATUS_CODES'. However, a corresponding "
                             "error response serializer could not be determined. Make "

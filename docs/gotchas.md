@@ -44,8 +44,8 @@ urlpatterns = [
 import pytest
 from rest_framework.test import APIClient
 
-from drf_standardized_errors.formatter import ExceptionFormatter
-from drf_standardized_errors.types import ErrorResponse
+from drf_error_handler.formatter import ExceptionFormatter
+from drf_error_handler.types import ErrorResponse
 
 
 @pytest.fixture
@@ -54,7 +54,7 @@ def api_client():
 
 
 def test_custom_exception_formatter_class(settings, api_client):
-    settings.DRF_STANDARDIZED_ERRORS = {
+    settings.DRF_ERROR_HANDLER = {
         "EXCEPTION_FORMATTER_CLASS": "tests.CustomExceptionFormatter"
     }
     response = api_client.get("/error/")

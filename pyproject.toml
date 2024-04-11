@@ -3,14 +3,14 @@ requires = ["flit_core >=3.2,<4"]
 build-backend = "flit_core.buildapi"
 
 [project]
-name = "drf-standardized-errors"
+name = "drf-error-handler"
 keywords = [
     "standardized errors",
     "errors formatter",
     "django rest framework",
     "exception handler",
 ]
-authors = [{ name = "Ghazi Abbassi" }]
+authors = [{ name = "Ghazi Abbassi" }, {name = "Nazar Korchizhinskiy"}]
 license = { file = "LICENSE" }
 readme = "README.md"
 classifiers = [
@@ -31,14 +31,14 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/ghazi-git/drf-standardized-errors"
-Documentation = "https://drf-standardized-errors.readthedocs.io/en/latest/"
-Code = "https://github.com/ghazi-git/drf-standardized-errors"
-Issues = "https://github.com/ghazi-git/drf-standardized-errors/issues"
-Changelog = "https://github.com/ghazi-git/drf-standardized-errors/releases"
+Homepage = "https://github.com/korchizhinskiy/drf-error-handler"
+Documentation = "https://drf-error-handler.readthedocs.io/en/latest/"
+Code = "https://github.com/korchizhinskiy/drf-error-handler"
+Issues = "https://github.com/korchizhinskiy/drf-error-handler/issues"
+Changelog = "https://github.com/korchizhinskiy/drf-error-handler/releases"
 
 [tool.flit.module]
-name = "drf_standardized_errors"
+name = "drf_error_handler"
 
 [project.optional-dependencies]
 dev = ["pre-commit"]
@@ -79,7 +79,7 @@ message_template = "Bump to {new_version}"
 tag_template = "v{new_version}"
 
 [[tool.tbump.file]]
-src = "drf_standardized_errors/__init__.py"
+src = "drf_error_handler/__init__.py"
 search = '__version__ = "{current_version}"'
 
 [[tool.tbump.before_commit]]

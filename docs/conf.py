@@ -20,9 +20,9 @@ sys.path.insert(0, os.path.abspath(".."))
 
 # -- Project information -----------------------------------------------------
 
-project = "DRF Standardized Errors"
+project = "DRF Error Handler"
 copyright = "2022, Ghazi Abbassi"
-author = "Ghazi Abbassi"
+author = "Nazar Korchizhinskiy"
 
 
 # -- General configuration ---------------------------------------------------

@@ -1,3 +1,4 @@
+from drf_error_handler.settings import DEFAULTS, IMPORT_STRINGS, PackageSettings
 from rest_framework.exceptions import AuthenticationFailed as _AuthenticationFailed
 from rest_framework.exceptions import MethodNotAllowed as _MethodNotAllowed
 from rest_framework.exceptions import NotAcceptable as _NotAcceptable
@@ -8,8 +9,6 @@ from rest_framework.exceptions import PermissionDenied as _PermissionDenied
 from rest_framework.exceptions import Throttled as _Throttled
 from rest_framework.exceptions import UnsupportedMediaType as _UnsupportedMediaType
 from rest_framework.exceptions import ValidationError as _ValidationError
-
-from drf_standardized_errors.settings import DEFAULTS, IMPORT_STRINGS, PackageSettings
 
 package_settings = PackageSettings(DEFAULTS, IMPORT_STRINGS)
 

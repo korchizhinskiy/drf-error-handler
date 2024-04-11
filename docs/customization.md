@@ -42,10 +42,10 @@ class ServiceUnavailable(APIException):
     default_detail = 'Service temporarily unavailable, try again later.'
     default_code = 'service_unavailable'
 ```
-- You need to subclass `drf_standardized_errors.handler.ExceptionHandler` and override `convert_known_exceptions`
+- You need to subclass `drf_error_handler.handler.ExceptionHandler` and override `convert_known_exceptions`
 ```
 import requests
-from drf_standardized_errors.handler import ExceptionHandler
+from drf_error_handler.handler import ExceptionHandler
 
 class MyExceptionHandler(ExceptionHandler):
     def convert_known_exceptions(self, exc: Exception) -> Exception:
@@ -56,7 +56,7 @@ class MyExceptionHandler(ExceptionHandler):
 ```
 Then, update the setting to point to your exception handler class
 ```python
-DRF_STANDARDIZED_ERRORS = {"EXCEPTION_HANDLER_CLASS": "path.to.MyExceptionHandler"}
+DRF_ERROR_HANDLER = {"EXCEPTION_HANDLER_CLASS": "path.to.MyExceptionHandler"}
 ```
 
 ### Change the format of the error response
@@ -66,8 +66,8 @@ you want to change `detail` to `message` and `attr` to `field_name`.
 
 You'll need to subclass `ExceptionFormatter` and override `format_error_response`.
 ```python
-from drf_standardized_errors.formatter import ExceptionFormatter
-from drf_standardized_errors.types import ErrorResponse
+from drf_error_handler.formatter import ExceptionFormatter
+from drf_error_handler.types import ErrorResponse
 
 class MyExceptionFormatter(ExceptionFormatter):
     def format_error_response(self, error_response: ErrorResponse):
@@ -81,5 +81,5 @@ class MyExceptionFormatter(ExceptionFormatter):
 ```
 Then, update the corresponding setting
 ```python
-DRF_STANDARDIZED_ERRORS = {"EXCEPTION_FORMATTER_CLASS": "path.to.MyExceptionFormatter"}
+DRF_ERROR_HANDLER = {"EXCEPTION_FORMATTER_CLASS": "path.to.MyExceptionFormatter"}
 ```

@@ -24,7 +24,7 @@ def extend_validation_errors(
     """
     A view/viewset decorator for adding extra error codes to validation errors.
     This decorator does not override error codes already collected by
-    drf-standardized-errors.
+    drf-error-handler.
 
     :param error_codes: list of error codes to add.
     :param field_name: name of serializer or form field to which the error codes

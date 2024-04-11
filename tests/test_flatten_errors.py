@@ -1,8 +1,7 @@
 import pytest
+from drf_error_handler.formatter import flatten_errors
 from rest_framework.exceptions import ErrorDetail
 from rest_framework.test import APIClient
-
-from drf_standardized_errors.formatter import flatten_errors
 
 
 @pytest.fixture
@@ -21,11 +20,7 @@ def test_one_error(required_name_error):
 @pytest.fixture
 def multiple_errors():
     return {
-        "phone": [
-            ErrorDetail(
-                "The phone number entered is not valid.", code="invalid_phone_number"
-            )
-        ],
+        "phone": [ErrorDetail("The phone number entered is not valid.", code="invalid_phone_number")],
         "password": [
             ErrorDetail("This password is too short.", code="password_too_short"),
             ErrorDetail(
