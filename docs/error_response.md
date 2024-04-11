@@ -6,7 +6,6 @@ The default error response format looks like this
   "type": "validation_error",
   "errors": [
     {
-      "code": "required",
       "detail": "This field is required.",
       "attr": "name"
     }
@@ -15,7 +14,6 @@ The default error response format looks like this
 ```
 
 - `type`: can be `validation_error`, `client_error` or `server_error`
-- `code`: short string describing the error. Can be used by API consumers to customize their behavior.
 - `detail`: User-friendly text describing the error.
 - `attr`: set only when the error type is a `validation_error` and maps to the serializer field name or `settings.NON_FIELD_ERRORS_KEY`.
 
@@ -57,8 +55,8 @@ can be for the same field or for different fields. So, a sample DRF error dict l
         ErrorDetail("The phone number entered is not valid.", code="invalid_phone_number")
     ],
     "password": [
-        ErrorDetail("This password is too short.", code="password_too_short"),
-        ErrorDetail("The password is too similar to the username.", code="password_too_similar"),
+        ErrorDetail("This password is too short."),
+        ErrorDetail("The password is too similar to the username."),
     ],
 }
 ```
@@ -68,17 +66,14 @@ would be converted to:
     "type": "validation_error",
     "errors": [
         {
-            "code": "invalid_phone_number",
             "detail": "The phone number entered is not valid.",
             "attr": "phone"
         },
         {
-            "code": "password_too_short",
             "detail": "This password is too short.",
             "attr": "password"
         },
         {
-            "code": "password_too_similar",
             "detail": "The password is too similar to the username.",
             "attr": "password"
         }
@@ -92,14 +87,13 @@ Taking this example
 ```
 {
     "shipping_address": {
-        "non_field_errors": [ErrorDetail("We do not support shipping to the provided address.", code="unsupported")]
+        "non_field_errors": [ErrorDetail("We do not support shipping to the provided address.")]
     }
 }
 ```
 It will be converted to:
 ```json
 {
-    "code": "unsupported",
     "detail": "We do not support shipping to the provided address.",
     "attr": "shipping_address.non_field_errors"
 }
@@ -112,8 +106,8 @@ This example
 ```
 {
     "recipients": [
-        {"name": [ErrorDetail("This field is required.", code="required")]},
-        {"email": [ErrorDetail("Enter a valid email address.", code="invalid")]},
+        {"name": [ErrorDetail("This field is required.")]},
+        {"email": [ErrorDetail("Enter a valid email address.")]},
     ]
 }
 ```
@@ -123,12 +117,10 @@ would be converted to
     "type": "validation_error",
     "errors": [
         {
-            "code": "required",
             "detail": "This field is required.",
             "attr": "recipients.0.name"
         },
         {
-            "code": "invalid",
             "detail": "Enter a valid email address.",
             "attr": "recipients.1.email"
         }

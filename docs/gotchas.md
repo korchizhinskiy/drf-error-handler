@@ -60,7 +60,6 @@ def test_custom_exception_formatter_class(settings, api_client):
     response = api_client.get("/error/")
     assert response.status_code == 500
     assert response.data["type"] == "server_error"
-    assert response.data["code"] == "error"
     assert response.data["message"] == "Internal server error."
     assert response.data["field_name"] is None
 
@@ -71,7 +70,6 @@ class CustomExceptionFormatter(ExceptionFormatter):
         error = error_response.errors[0]
         return {
             "type": error_response.type,
-            "code": error.code,
             "message": error.detail,
             "field_name": error.attr,
         }

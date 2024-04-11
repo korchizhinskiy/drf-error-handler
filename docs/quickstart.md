@@ -37,12 +37,10 @@ Now, your API error responses for 4xx and 5xx errors, will look like this
   "type": "validation_error",
   "errors": [
     {
-      "code": "required",
       "detail": "This field is required.",
       "attr": "name"
     },
     {
-      "code": "max_length",
       "detail": "Ensure this value has at most 100 characters.",
       "attr": "title"
     }
@@ -55,7 +53,6 @@ or
   "type": "server_error",
   "errors": [
     {
-      "code": "error",
       "detail": "A server error occurred.",
       "attr": null
     }
@@ -65,16 +62,10 @@ or
 
 ## Important Notes
 
-- Standardized error responses when `DEBUG=True` for **unhandled exceptions** are disabled by default. That is
-to allow you to get more information out of the traceback. You can enable standardized errors instead with:
-```python
-DRF_STANDARDIZED_ERRORS = {"ENABLE_IN_DEBUG_FOR_UNHANDLED_EXCEPTIONS": True}
-```
-
 - Cases where you explicitly return a response with a 4xx or 5xx status code in your `APIView` do not go through
 the exception handler and thus, will not have the standardized error format. So, we recommend that you raise an
 exception with
-`raise APIException("Service temporarily unavailable.", code="service_unavailable")`
+`raise APIException("Service temporarily unavailable.")`
 instead of `return Response(data, status=500)`. That way, error response formatting is handled automatically for you.
 But, keep in mind that exceptions that result in 5xx response are reported to error monitoring tools (like Sentry)
 if you're using one.

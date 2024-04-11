@@ -21,7 +21,6 @@ that can be returned.
     "type": "client_error",
     "errors": [
         {
-            "code": "authentication_failed",
             "detail": "Incorrect authentication credentials.",
             "attr": null
         }
@@ -33,7 +32,6 @@ that can be returned.
     "type": "client_error",
     "errors": [
         {
-            "code": "not_authenticated",
             "detail": "Authentication credentials were not provided.",
             "attr": null
         }
@@ -50,7 +48,6 @@ a POST request and a PATCH is issued instead, this error is returned. Here's how
     "type": "client_error",
     "errors": [
         {
-            "code": "method_not_allowed",
             "detail": "Method “patch” not allowed.",
             "attr": null
         }
@@ -66,7 +63,6 @@ This is returned if the `Accept` header is submitted and contains a value other 
     "type": "client_error",
     "errors": [
         {
-            "code": "not_acceptable",
             "detail": "Could not satisfy the request Accept header.",
             "attr": null
         }
@@ -82,7 +78,6 @@ This is returned when the request content type is not json. Here's how the respo
     "type": "client_error",
     "errors": [
         {
-            "code": "not_acceptable",
             "detail": "Unsupported media type “application/xml” in request.",
             "attr": null
         }
@@ -98,7 +93,6 @@ This is returned when the API server encounters an unexpected error. Here's how 
     "type": "server_error",
     "errors": [
         {
-            "code": "error",
             "detail": "A server error occurred.",
             "attr": null
         }
