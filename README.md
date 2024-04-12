@@ -15,12 +15,10 @@ By default, the package will convert all API error responses (4xx and 5xx) to th
   "type": "validation_error",
   "errors": [
     {
-      "code": "required",
       "detail": "This field is required.",
       "attr": "name"
     },
     {
-      "code": "max_length",
       "detail": "Ensure this value has at most 100 characters.",
       "attr": "title"
     }
@@ -32,7 +30,6 @@ By default, the package will convert all API error responses (4xx and 5xx) to th
   "type": "client_error",
   "errors": [
     {
-      "code": "authentication_failed",
       "detail": "Incorrect authentication credentials.",
       "attr": null
     }
@@ -44,7 +41,6 @@ By default, the package will convert all API error responses (4xx and 5xx) to th
   "type": "server_error",
   "errors": [
     {
-      "code": "error",
       "detail": "A server error occurred.",
       "attr": null
     }
