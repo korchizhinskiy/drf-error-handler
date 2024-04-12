@@ -77,9 +77,9 @@ class ExceptionHandler:
     def convert_known_exceptions(self, exc: Exception) -> Exception:
         """By default, Django's built-in `Http404` and `PermissionDenied` are converted to their DRF equivalent."""
         if isinstance(exc, (Http404, _NotFound)):
-            return NotFound()
+            return NotFound(*exc.args)
         if isinstance(exc, (DjangoPermissionDenied, _PermissionDenied)):
-            return PermissionDenied()
+            return PermissionDenied(*exc.args)
         if isinstance(exc, _ValidationError):
             return ValidationError(*exc.args)
         if isinstance(exc, _UnsupportedMediaType):

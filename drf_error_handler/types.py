@@ -1,4 +1,5 @@
-from dataclasses import dataclass
+from __future__ import annotations
+from dataclasses import dataclass, field, make_dataclass
 from enum import Enum
 from typing import List, Optional, TypedDict, cast
 
@@ -17,10 +18,15 @@ class ExceptionHandlerContext(TypedDict):
 
 
 BUSINESS_CODE_NAME = cast(str, package_settings.EXCEPTION_RESPONSE_BUSINESS_ATTRIBUTE)
+
+
 class ErrorType(str, Enum):
     VALIDATION_ERROR = "validation_error"
     CLIENT_ERROR = "client_error"
     SERVER_ERROR = "server_error"
+
+
+Error = make_dataclass("Error", [("detail", str), ("attr", type[Optional[str]]), (BUSINESS_CODE_NAME, int)])
 
 
 @dataclass
