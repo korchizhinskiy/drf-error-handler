@@ -97,12 +97,6 @@ handle errors that happen at the middleware level for example. To handle those a
 the necessary [django error views](https://docs.djangoproject.com/en/dev/topics/http/views/#customizing-error-views).
 You can find more about that in [this issue](https://github.com/korchizhinskiy/drf-error-handler/issues/44).
 
-- Standardized error responses when `DEBUG=True` for **unhandled exceptions** are disabled by default. That is
-to allow you to get more information out of the traceback. You can enable standardized errors instead with:
-```python
-DRF_ERROR_HANDLER = {"ENABLE_IN_DEBUG_FOR_UNHANDLED_EXCEPTIONS": True}
-```
-
 ## Integration with DRF spectacular
 If you plan to use [drf-spectacular](https://github.com/tfranzel/drf-spectacular) to generate an OpenAPI 3 schema,
 install with `pip install drf-error-handler[openapi]`. After that, check the [doc page](https://drf-error-handler.readthedocs.io/en/latest/openapi.html)
