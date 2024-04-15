@@ -47,28 +47,6 @@ Now, your API error responses for 4xx and 5xx errors, will look like this
   ]
 }
 ```
-or 
-```json
-{
-  "type": "server_error",
-  "errors": [
-    {
-      "detail": "A server error occurred.",
-      "attr": null
-    }
-  ]
-}
-```
-
-## Important Notes
-
-- Cases where you explicitly return a response with a 4xx or 5xx status code in your `APIView` do not go through
-the exception handler and thus, will not have the standardized error format. So, we recommend that you raise an
-exception with
-`raise APIException("Service temporarily unavailable.")`
-instead of `return Response(data, status=500)`. That way, error response formatting is handled automatically for you.
-But, keep in mind that exceptions that result in 5xx response are reported to error monitoring tools (like Sentry)
-if you're using one.
 
 ## Integration with DRF spectacular
 If you plan to use [drf-spectacular](https://github.com/tfranzel/drf-spectacular) to generate an OpenAPI 3 schema,
