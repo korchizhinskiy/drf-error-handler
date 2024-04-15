@@ -9,7 +9,7 @@ Standardize your [DRF](https://www.django-rest-framework.org/) API error respons
 [![PyPI - License](https://img.shields.io/pypi/l/drf-error-handler)](https://github.com/korchizhinskiy/drf-error-handler/blob/main/LICENSE)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
-By default, the package will convert all API error responses (4xx and 5xx) to the following standardized format:
+By default, the package will convert API error responses (4xx) to the following standardized format:
 ```json
 {
   "type": "validation_error",
@@ -20,7 +20,8 @@ By default, the package will convert all API error responses (4xx and 5xx) to th
     },
     {
       "detail": "Ensure this value has at most 100 characters.",
-      "attr": "title"
+      "attr": "title",
+      "b_code": 10000
     }
   ]
 }
@@ -31,18 +32,8 @@ By default, the package will convert all API error responses (4xx and 5xx) to th
   "errors": [
     {
       "detail": "Incorrect authentication credentials.",
-      "attr": null
-    }
-  ]
-}
-```
-```json
-{
-  "type": "server_error",
-  "errors": [
-    {
-      "detail": "A server error occurred.",
-      "attr": null
+      "attr": null,
+      "b_code": 11111
     }
   ]
 }
@@ -86,6 +77,68 @@ REST_FRAMEWORK = {
     "EXCEPTION_HANDLER": "drf_error_handler.handler.exception_handler"
 }
 ```
+Then you may override something a few settings for package
+
+```python
+DRF_ERROR_HANDLER = {
+    "EXCEPTION_RESPONSE_BUSINESS_ATTRIBUTE": "b_code"
+}
+```
+This settings define, which attribute will be viewed in response body for business code.
+But after that, all exception classes must containt an attribute with name, which you override in `EXCEPTION_RESPONSE_BUSINESS_ATTRIBUTE` settings ("b_code" by default).
+
+For standart DRF Exceptions defined business code in settings.
+```python
+DRF_ERROR_HANDLER = {
+    "VALIDATION_ERROR_BUSINESS_STATUS_CODE": 1001,
+    "PARSE_ERROR_BUSINESS_STATUS_CODE": 1002,
+    "AUTHENTICATION_FAILED_BUSINESS_STATUS_CODE": 1003,
+    "NOT_AUTHENTICATION_BUSINESS_STATUS_CODE": 1004,
+    "PERMISSION_DENIED_BUSINESS_STATUS_CODE": 1005,
+    "NOT_FOUND_BUSINESS_STATUS_CODE": 1006,
+    "METHOD_NOT_ALLOWED_BUSINESS_STATUS_CODE": 1007,
+    "NOT_ACCEPTABLE_BUSINESS_STATUS_CODE": 1008,
+    "UNSUPPORTED_MEDIA_TYPE_BUSINESS_STATUS_CODE": 1009,
+    "THROTTLED_BUSINESS_STATUS_CODE": 1010
+}
+```
+This codes will view for standart DRF and Django exceptions after handle by ErrorHandler in response body.
+
+For create custom exception class, you should do that:
+1. Create exception class with inherit from `rest_framework.exceptions.APIException`
+```python
+from rest_framework.exceptions import APIException
+
+class CustomException(APIException):
+    status_code = status.HTTP_400_BAD_REQUEST
+    default_detail = 'You can\'t place an order at this time.'
+    b_code = 1011
+
+```
+You must define b_code (or overriding attribute) in exception class.
+
+2. Raise custom exception.
+```python
+def view(request):
+    ...
+    raise CustomException
+```
+
+3. And Error Handler process this exception and return valid response.
+
+```json
+{
+  "type": "client_error",
+  "errors": [
+    {
+      "detail": "You can't place an order at this time.",
+      "attr": null,
+      "b_code": 1011
+    }
+  ]
+}
+```
+
 
 ### Notes
 - This package is a DRF exception handler, so it standardizes errors that reach a DRF API view. That means it cannot
