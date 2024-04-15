@@ -26,8 +26,8 @@ classifiers = [
 dynamic = ["version", "description"]
 requires-python = ">=3.8"
 dependencies = [
-    "django >=3.2",
-    "djangorestframework >=3.12",
+    "django >=2.2",
+    "djangorestframework >=3.9",
 ]
 
 [project.urls]
