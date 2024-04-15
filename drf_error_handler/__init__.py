@@ -1,3 +1,3 @@
 """Standardize your API error responses."""
 
-__version__ = "0.14.2"
+__version__ = "0.14.3"
