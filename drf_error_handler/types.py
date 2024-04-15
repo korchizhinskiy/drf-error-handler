@@ -1,11 +1,13 @@
 from __future__ import annotations
-from dataclasses import dataclass, field, make_dataclass
-from enum import Enum
-from typing import List, Optional, TypedDict, cast
 
-from drf_error_handler.settings import DEFAULTS, IMPORT_STRINGS, PackageSettings
+from dataclasses import dataclass, make_dataclass
+from enum import Enum
+from typing import List, Optional, Type, TypedDict, cast
+
 from rest_framework.request import Request
 from rest_framework.views import APIView
+
+from drf_error_handler.settings import DEFAULTS, IMPORT_STRINGS, PackageSettings
 
 package_settings = PackageSettings(DEFAULTS, IMPORT_STRINGS)
 
@@ -26,20 +28,12 @@ class ErrorType(str, Enum):
     SERVER_ERROR = "server_error"
 
 
-Error = make_dataclass("Error", [("detail", str), ("attr", type[Optional[str]]), (BUSINESS_CODE_NAME, int)])
-
-
-@dataclass
-class Error:
-    detail: str
-    attr: Optional[str]
-    BUSINESS_CODE_NAME: Optional[int]
-
+Error = make_dataclass("Error", [("detail", str), ("attr", Type[Optional[str]]), (BUSINESS_CODE_NAME, int)])
 
 @dataclass
 class ErrorResponse:
     type: ErrorType
-    errors: List[Error]
+    errors: List[Error] # type: ignore[reportInvalidTypeForm]
 
 
 class SetValidationErrorsKwargs(TypedDict):
